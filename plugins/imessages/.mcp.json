@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "imessages": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "${CLAUDE_PLUGIN_ROOT}",
+        "python",
+        "-m",
+        "mcp_stash_imessages"
+      ]
+    }
+  }
+}

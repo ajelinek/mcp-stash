@@ -1,0 +1,12 @@
+{
+  "name": "iphone-history",
+  "version": "0.1.0",
+  "description": "Placeholder/test plugin proving the mcp-stash pattern end to end: package build, GitHub marketplace install, stdio connection, and read-only local filesystem access to the iPhone backup directory. Does not read backup content.",
+  "author": {
+    "name": "ajelinek"
+  },
+  "homepage": "https://github.com/ajelinek/mcp-stash",
+  "repository": "https://github.com/ajelinek/mcp-stash",
+  "license": "MIT",
+  "keywords": ["placeholder", "iphone", "fastmcp", "mcp-stash"]
+}

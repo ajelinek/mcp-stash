@@ -1,0 +1,16 @@
+{
+  "source": {
+    "type": "filesystem",
+    "path": "src/mcp_stash_iphone_history/server.py",
+    "entrypoint": "mcp"
+  },
+  "environment": {
+    "type": "uv",
+    "python": ">=3.12",
+    "project": "."
+  },
+  "deployment": {
+    "transport": "stdio",
+    "log_level": "INFO"
+  }
+}
