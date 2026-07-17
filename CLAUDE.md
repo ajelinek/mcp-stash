@@ -30,8 +30,11 @@ plugins/<name>/
   .claude-plugin/plugin.json   # name (kebab-case), version, description, author, etc.
   .mcp.json                    # declares the bundled MCP server(s) — see below
   fastmcp.json                 # local dev only (`fastmcp run fastmcp.json`); NOT used by the installed plugin
+  hooks/hooks.json              # SessionStart hook warning if `uv` is missing — see below
+  hooks/check_uv.py             # symlink -> packages/common/hooks/check_uv.py
   skills/<name>/SKILL.md        # tells Claude when/how to use this plugin's tools
   pyproject.toml
+  uv.lock                      # standalone lock, NOT the workspace root's — see "Per-plugin lockfile" below
   src/mcp_stash_<name>/
     __init__.py                # `from .server import mcp`
     __main__.py                # `from mcp_stash_<name>.server import mcp` + `mcp.run()` under `if __name__ == "__main__"`
@@ -182,6 +185,57 @@ own distribution, only ever consumed this way. Only vendor it if the
 new plugin actually needs its helpers (logging, `~/.mcp-stash/<name>/`
 state paths, keychain secrets, desktop notifications, read-only
 filesystem checks); it's fine for a plugin to skip this entirely.
+
+## `uv`-missing hook (every plugin should have this)
+
+Every plugin needs `uv` on the client's `PATH` to run at all (see
+`.mcp.json` above). If it's missing, the client would otherwise just
+see a silent "MCP server failed to connect" with no indication why.
+Every plugin should include a `SessionStart` hook that checks for `uv`
+and, if it's missing, shows a clear, actionable message — **never**
+silently auto-installs anything on a client's machine; that's a
+deliberate choice, not an oversight, since this can run unattended on
+a client's computer.
+
+Vendor the same way as `packages/common` — a symlink, since this is a
+plain script (not part of the installable package, so no
+`module-name`/build-backend involvement needed):
+
+```bash
+mkdir -p plugins/<name>/hooks
+ln -s ../../../packages/common/hooks/check_uv.py plugins/<name>/hooks/check_uv.py
+```
+
+`plugins/<name>/hooks/hooks.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/check_uv.py"] },
+          { "type": "command", "command": "py", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/check_uv.py"] }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Two entries (`python3` for macOS/Linux, `py` for the Windows launcher)
+because exec-form hooks need one literal interpreter name and Windows
+Python installs aren't consistent about which alias is on `PATH` —
+whichever name doesn't exist on a given machine just fails to spawn
+that one entry; the other one covers it. This has only been verified
+by reasoning through the documented hook contract and by simulating
+the cache-copy locally (`packages/common/hooks/check_uv.py` is plain
+stdlib Python, dereferences and runs standalone the same way
+`mcp_stash_common` does) — it has **not** been exercised against a
+real Windows machine or a live Claude Desktop session. Smoke-test it
+for real once there's Windows access, particularly whether a hook
+entry whose `command` can't be spawned at all surfaces as visible
+error clutter or fails silently.
 
 ## Skills
 
