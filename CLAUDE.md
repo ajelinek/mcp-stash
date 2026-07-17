@@ -61,7 +61,7 @@ ambiguously.
   "mcpServers": {
     "<name>": {
       "command": "uv",
-      "args": ["run", "--project", "${CLAUDE_PLUGIN_ROOT}", "python", "-m", "mcp_stash_<name>"]
+      "args": ["run", "--project", "${CLAUDE_PLUGIN_ROOT}", "--locked", "python", "-m", "mcp_stash_<name>"]
     }
   }
 }
@@ -71,7 +71,10 @@ Invoke the module directly (`uv run --project ... python -m <pkg>`),
 not `fastmcp run <fastmcp.json>` — once installed, the plugin directory
 is a fully self-sufficient uv project, and going through FastMCP's own
 CLI would add a second, redundant environment-management layer with its
-own path assumptions.
+own path assumptions. `--locked` requires the plugin's own `uv.lock`
+(see next section) and makes the client's install fail loudly if that
+lock is ever out of sync with `pyproject.toml`, instead of silently
+resolving different dependency versions than what was tested.
 
 A single plugin can bundle **multiple** MCP servers: add more entries
 to this same `mcpServers` object (each its own `command`/`args`,
@@ -113,6 +116,43 @@ build-backend = "uv_build"
 If this plugin vendors `packages/common` (see next section), add
 `"keyring>=25.5.0"` to `dependencies` (a transitive import of
 `mcp_stash_common`) and the `[tool.uv.build-backend]` table shown below.
+
+## Per-plugin lockfile (`uv.lock`)
+
+Every plugin ships its **own** `uv.lock`, committed at
+`plugins/<name>/uv.lock`, pinning the exact resolved versions of
+`fastmcp`/`keyring`/every transitive dependency for that plugin. This
+is what `--locked` in `.mcp.json` (above) enforces at launch. Without
+it, two clients installing the same plugin version weeks apart could
+silently resolve different transitive dependency versions if something
+new lands on PyPI in between — the opposite of "these are client
+deliverables that need controlled releases."
+
+**Why you can't just run `uv lock` inside the plugin directory**: this
+repo is a uv workspace, and every `plugins/<name>/` is a workspace
+member. Any `uv` command run with a cwd inside one walks up, finds the
+workspace root, and operates on the *shared* root `uv.lock` instead —
+it will not create a standalone one. A standalone lock only makes sense
+for how the plugin actually runs post-install: alone, with no workspace
+around it (exactly what Desktop's plugin cache looks like). So the lock
+has to be generated in that same isolated shape:
+
+```bash
+rm -rf /tmp/lock-sim && mkdir -p /tmp/lock-sim
+cp -RL plugins/<name> /tmp/lock-sim/<name>   # -L dereferences the mcp_stash_common symlink, matching Desktop's cache-copy
+cd /tmp/lock-sim/<name>
+uv lock                                       # no enclosing workspace here -> produces a real standalone uv.lock
+cp uv.lock <repo>/plugins/<name>/uv.lock
+```
+
+Re-run this any time that plugin's `pyproject.toml` dependencies
+change, as part of the release steps below — a stale lock is exactly
+what `--locked` is there to catch, so regenerating it isn't optional.
+A per-plugin `uv.lock` sitting inside a workspace member does **not**
+interfere with root-level workspace commands (`uv sync --all-packages`,
+`uv run pytest`, CI) — verified: the workspace only ever reads/writes
+the root lock; a member's own lock is inert until that member is run
+standalone.
 
 ## Sharing code via `packages/common`
 
@@ -173,6 +213,11 @@ claude plugin validate ./plugins/<name>
 claude plugin validate .            # whole marketplace, run before every push
 ```
 
+Don't forget to generate `plugins/<name>/uv.lock` (see previous
+section) before considering a new plugin done — without it, `--locked`
+in `.mcp.json` will fail for every client since there's no lock to
+enforce.
+
 `claude plugin validate` and `claude` generally are maintainer-side dev
 tools only — clients never run them; they use Claude Desktop's GUI.
 
@@ -185,7 +230,10 @@ and runs with no sibling `packages/` directory present.
 
 ## Versioning and releases
 
-Each plugin versions independently. To release a change: bump
+Each plugin versions independently. To release a change: update
+`plugins/<name>/pyproject.toml` dependencies if needed, **regenerate
+`plugins/<name>/uv.lock`** (see "Per-plugin lockfile" above — a stale
+lock is the one thing `--locked` will not silently tolerate), bump
 `version` in `plugins/<name>/.claude-plugin/plugin.json`, add a dated
 entry to `plugins/<name>/CHANGELOG.md`, then
 `claude plugin tag plugins/<name> --push` (or omit `--push` and push
