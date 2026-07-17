@@ -1,0 +1,20 @@
+{
+  "name": "mcp-stash",
+  "description": "Claude plugins for consulting client automations, each bundling a local FastMCP server (and Skills) as a one-command install.",
+  "owner": {
+    "name": "ajelinek",
+    "email": "shadetreeit.biz@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "imessages",
+      "source": "./plugins/imessages",
+      "description": "Placeholder/test plugin: proves the package builds, installs, and can see the local iMessage database's existence/metadata (no message content is read)."
+    },
+    {
+      "name": "iphone-history",
+      "source": "./plugins/iphone-history",
+      "description": "Placeholder/test plugin: proves the package builds, installs, and can see the local iPhone backup directory's existence/metadata (no backup content is read)."
+    }
+  ]
+}
