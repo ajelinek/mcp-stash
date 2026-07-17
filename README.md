@@ -32,12 +32,11 @@ solutions they need.
 
 ```
 mcp-stash/
+  CLAUDE.md                        # how this repo works — read this to add a new plugin
   .claude-plugin/marketplace.json  # the marketplace manifest
   packages/common/                 # shared helpers, vendored (not installed) into plugins
-  plugins/_template/                # copy-paste scaffold, never published
   plugins/imessages/                # placeholder/test solution #1
   plugins/iphone-history/           # placeholder/test solution #2
-  scripts/new_plugin.sh             # scaffolds a new plugin from _template
 ```
 
 ## Installing a plugin (for clients)
@@ -74,71 +73,21 @@ mechanics, which are identical for every plugin here.
 
 ## Adding a new solution (for you)
 
-1. Scaffold it from the template:
-
-   ```
-   ./scripts/new_plugin.sh my-solution "One-line description"
-   ```
-
-   This copies `plugins/_template` to `plugins/my-solution`, renaming
-   the Python package, the skill directory, and the `plugin.json` name
-   field.
-
-2. Implement real tools in
-   `plugins/my-solution/src/mcp_stash_my_solution/server.py`, and real
-   guidance in `plugins/my-solution/skills/my-solution/SKILL.md`.
-
-3. If the new plugin needs helpers from `packages/common` (logging,
-   state paths, secrets, notifications, filesystem checks), vendor them
-   via a symlink — required, not optional, because Claude Desktop
-   copies each plugin's directory into an isolated cache at install
-   time and does not follow paths outside the plugin. Copy the pattern
-   from `plugins/imessages`:
-
-   ```
-   ln -s ../../../packages/common/src/mcp_stash_common \
-     plugins/my-solution/src/mcp_stash_common
-   ```
-
-   and add `"mcp_stash_common"` to the `module-name` list in
-   `plugins/my-solution/pyproject.toml`'s `[tool.uv.build-backend]`
-   table.
-
-4. Register it:
-   - It's already picked up as a uv workspace member automatically
-     (`plugins/*` glob in the root `pyproject.toml`).
-   - Add an entry to `.claude-plugin/marketplace.json`'s `plugins` array
-     only once it's ready for clients to install — `plugins/_template`
-     is deliberately never added here.
-
-5. Sync, lint, and test from the repo root:
-
-   ```
-   uv sync --all-packages --locked
-   uv run ruff check .
-   uv run pytest
-   ```
-
-6. Validate the plugin and the whole marketplace (maintainer-side tool
-   only — clients never need this):
-
-   ```
-   claude plugin validate ./plugins/my-solution
-   claude plugin validate .
-   ```
-
-7. Test the real install flow in Claude Desktop before publishing (a
-   local path works for a marketplace under test).
-
-8. Release it — see "Versioning and releases" below.
+There's no scaffolding script — this repo is meant to be worked on
+with Claude's help. **`CLAUDE.md` documents the full pattern** (file
+layout, naming, the `packages/common` vendoring trick, registration,
+versioning); just ask Claude to add a new plugin (e.g. "add a plugin
+called `my-solution` that does X") and it will generate the files
+directly from that doc and `plugins/imessages`, which is a complete,
+tested, working reference implementation to copy the shape of.
 
 ## Local development
 
 ```
 uv sync --all-packages --locked   # one-time / after pulling changes
-make lint                          # ruff check .
-make test                          # uv run pytest
-make check                         # lint + test + claude plugin validate
+uv run ruff check .
+uv run pytest
+claude plugin validate .           # maintainer-side only — see CLAUDE.md
 ```
 
 Run a single plugin's tests with `uv run pytest plugins/<name>/tests`.
