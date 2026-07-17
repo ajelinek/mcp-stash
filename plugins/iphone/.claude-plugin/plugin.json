@@ -1,0 +1,12 @@
+{
+  "name": "iphone",
+  "version": "0.1.0",
+  "description": "Read (and, for iMessage, send) your iPhone's local data on this Mac: iMessage chats/search/send, Mac/iPhone call history (cellular + FaceTime), and Contacts lookup — via two bundled local FastMCP servers, no network calls, no writes beyond an explicit send.",
+  "author": {
+    "name": "ajelinek"
+  },
+  "homepage": "https://github.com/ajelinek/mcp-stash",
+  "repository": "https://github.com/ajelinek/mcp-stash",
+  "license": "MIT",
+  "keywords": ["imessage", "icallhistory", "contacts", "iphone", "macos", "fastmcp", "mcp-stash"]
+}

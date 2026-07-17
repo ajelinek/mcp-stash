@@ -13,6 +13,7 @@ members = [
     "mcp-stash",
     "mcp-stash-common",
     "mcp-stash-imessages",
+    "mcp-stash-iphone",
     "mcp-stash-iphone-history",
 ]
 
@@ -679,6 +680,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "mcp-stash-iphone"
+version = "0.1.0"
+source = { editable = "plugins/iphone" }
+dependencies = [
+    { name = "fastmcp" },
+    { name = "keyring" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastmcp", specifier = ">=3.4" },
+    { name = "keyring", specifier = ">=25.5.0" },
+]
+
+[[package]]
 name = "mcp-stash-iphone-history"
 version = "0.1.0"
 source = { editable = "plugins/iphone-history" }
@@ -1233,8 +1249,8 @@ name = "secretstorage"
 version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cryptography" },
-    { name = "jeepney" },
+    { name = "cryptography", marker = "sys_platform != 'win32'" },
+    { name = "jeepney", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1c/03/e834bcd866f2f8a49a85eaff47340affa3bfa391ee9912a952a1faa68c7b/secretstorage-3.5.0.tar.gz", hash = "sha256:f04b8e4689cbce351744d5537bf6b1329c6fc68f91fa666f60a380edddcd11be", size = 19884, upload-time = "2025-11-23T19:02:53.191Z" }
 wheels = [
