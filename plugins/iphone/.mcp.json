@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "imessage": {
+    "iphone": {
       "command": "uv",
       "args": [
         "run",
@@ -9,19 +9,7 @@
         "--locked",
         "python",
         "-m",
-        "mcp_stash_iphone.imessage_main"
-      ]
-    },
-    "icallhistory": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--project",
-        "${CLAUDE_PLUGIN_ROOT}",
-        "--locked",
-        "python",
-        "-m",
-        "mcp_stash_iphone.icallhistory_main"
+        "mcp_stash_iphone"
       ]
     }
   }

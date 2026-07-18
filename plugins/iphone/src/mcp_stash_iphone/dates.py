@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timedelta
-from typing import Optional
 
 APPLE_EPOCH_OFFSET = 978307200  # 2001-01-01 00:00:00 UTC, in Unix epoch seconds
 
@@ -82,5 +81,5 @@ def until_boundary(value: str) -> datetime:
     return dt
 
 
-def iso(dt: Optional[datetime]) -> Optional[str]:
+def iso(dt: datetime | None) -> str | None:
     return dt.isoformat(timespec="seconds") if dt else None
