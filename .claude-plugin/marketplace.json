@@ -9,7 +9,7 @@
     {
       "name": "iphone",
       "source": "./plugins/iphone",
-      "description": "Read (and send) iMessage history and read Mac/iPhone call history (cellular + FaceTime), plus Contacts lookup, via one bundled local FastMCP server. macOS only; requires Full Disk Access."
+      "description": "Read (and send) iMessage history, read Mac/iPhone call history (cellular + FaceTime), and look up Contacts — all locally on this Mac. macOS only; requires Full Disk Access."
     }
   ]
 }
