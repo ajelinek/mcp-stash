@@ -12,9 +12,7 @@ resolution-markers = [
 members = [
     "mcp-stash",
     "mcp-stash-common",
-    "mcp-stash-imessages",
     "mcp-stash-iphone",
-    "mcp-stash-iphone-history",
 ]
 
 [[package]]
@@ -665,39 +663,9 @@ dependencies = [
 requires-dist = [{ name = "keyring", specifier = ">=25.5.0" }]
 
 [[package]]
-name = "mcp-stash-imessages"
-version = "0.1.0"
-source = { editable = "plugins/imessages" }
-dependencies = [
-    { name = "fastmcp" },
-    { name = "keyring" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastmcp", specifier = ">=3.4" },
-    { name = "keyring", specifier = ">=25.5.0" },
-]
-
-[[package]]
 name = "mcp-stash-iphone"
 version = "0.1.0"
 source = { editable = "plugins/iphone" }
-dependencies = [
-    { name = "fastmcp" },
-    { name = "keyring" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastmcp", specifier = ">=3.4" },
-    { name = "keyring", specifier = ">=25.5.0" },
-]
-
-[[package]]
-name = "mcp-stash-iphone-history"
-version = "0.1.0"
-source = { editable = "plugins/iphone-history" }
 dependencies = [
     { name = "fastmcp" },
     { name = "keyring" },
