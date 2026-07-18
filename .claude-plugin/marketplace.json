@@ -7,14 +7,9 @@
   },
   "plugins": [
     {
-      "name": "imessages",
-      "source": "./plugins/imessages",
-      "description": "Placeholder/test plugin: proves the package builds, installs, and can see the local iMessage database's existence/metadata (no message content is read)."
-    },
-    {
-      "name": "iphone-history",
-      "source": "./plugins/iphone-history",
-      "description": "Placeholder/test plugin: proves the package builds, installs, and can see the local iPhone backup directory's existence/metadata (no backup content is read)."
+      "name": "iphone",
+      "source": "./plugins/iphone",
+      "description": "Read (and send) iMessage history, read Mac/iPhone call history (cellular + FaceTime), and look up Contacts — all locally on this Mac. macOS only; requires Full Disk Access."
     }
   ]
 }

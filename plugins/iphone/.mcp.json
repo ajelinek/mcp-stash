@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "iphone": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "${CLAUDE_PLUGIN_ROOT}",
+        "--locked",
+        "python",
+        "-m",
+        "mcp_stash_iphone"
+      ]
+    }
+  }
+}
