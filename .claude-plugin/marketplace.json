@@ -10,6 +10,11 @@
       "name": "iphone",
       "source": "./plugins/iphone",
       "description": "Read (and send) iMessage history, read Mac/iPhone call history (cellular + FaceTime), and look up Contacts — all locally on this Mac. macOS only; requires Full Disk Access."
+    },
+    {
+      "name": "career-navigator",
+      "source": "./plugins/career-navigator",
+      "description": "Conversational career exploration for a high school student: infers a RIASEC (Holland Code) profile through natural conversation, then matches it against a local O*NET occupational dataset. Fully local — no accounts, no hosting, no network calls at runtime."
     }
   ]
 }
